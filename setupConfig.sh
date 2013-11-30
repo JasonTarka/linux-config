@@ -21,6 +21,8 @@ for file in ${DIR}/*; do
 	else
 		echo "$HOME_FILE does not exist. Skipping."
 	fi
-	
-	
 done
+
+if [ -f $HOME/.profile ]; then
+	. $HOME/.profile
+fi
