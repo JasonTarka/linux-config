@@ -7,8 +7,14 @@ infoColour=32
 mainColour="\[\e[${mainColour}m\]"
 infoColour="\[\e[${infoColour}m\]"
 
-export PS1="\n${mainColour}[\u@${infoColour}\h${mainColour}, \d ${infoColour}\w${mainColour}]\n\t \$ \[\e[0m\]"
+export PS1="\n${mainColour}[\u@${infoColour}\h${mainColour}, \d ${infoColour}\w${mainColour}]\$(promptCurrentBranch)\n\t \$ \[\e[0m\]"
 
+function promptCurrentBranch {
+        local branch=`currentBranch`
+        if [ "$branch" != "" ]; then
+                echo " (${branch})"
+        fi
+}
 
 unset mainColour
 unset infoColour
