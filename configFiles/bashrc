@@ -10,7 +10,7 @@ infoColour="\[\e[${infoColour}m\]"
 export PS1="\n${mainColour}[\u@${infoColour}\h${mainColour}, \d ${infoColour}\w${mainColour}]\$(promptCurrentBranch)\n\t \$ \[\e[0m\]"
 
 function promptCurrentBranch {
-        local branch=`currentBranch`
+        local branch=`currentBranch 2> /dev/null`
         if [ "$branch" != "" ]; then
                 echo " (${branch})"
         fi
