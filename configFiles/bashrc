@@ -12,3 +12,105 @@ export PS1="\n${mainColour}[\u@${infoColour}\h${mainColour}, \d ${infoColour}\w$
 
 unset mainColour
 unset infoColour
+
+##############################################
+# Git Shortcuts
+
+function currentBranch {
+	git branch | grep '^\* ' | sed 's/[*] //'
+}
+
+function rebase {
+	local branch=`currentBranch`
+
+	local flag=''
+	if [ "$1" == "keep-dates" ]; then
+		flag="--committer-date-is-author-date"
+	fi
+
+	echo "Checking out master"
+	git checkout master
+	echo "Pulling"
+	git pull
+	echo "Checking out $branch"
+	git checkout $branch
+	echo "Starting rebase"
+	git rebase $flag master
+}
+
+function rebase-upstream {
+	local branch=`currentBranch`
+
+	local flag=''
+	if [ "$1" == "keep-dates" ]; then
+		flag="--committer-date-is-author-date"
+	fi
+
+	master
+	echo "Checking out $branch"
+	git checkout $branch
+	echo "Starting rebase"
+	git rebase $flag master
+}
+
+function pull-upstream {
+	local branch=`currentBranch`
+	local upstream=`git remote | grep upstream`
+	
+	echo "Pulling from origin"
+	git pull origin $branch
+	
+	if [ "$upstream" != "" ]; then
+		echo "Pulling from upstream"
+		git pull upstream $branch
+	fi
+}
+
+function push {
+	local branch=`currentBranch`
+	local flag=''
+	if [ "$1" != "" ]; then
+		flag=$1
+	fi
+	echo "Pushing $branch to origin"
+	git push $flag origin $branch
+}
+
+function merge {
+	local branch=`currentBranch`
+	echo "Checking out master"
+	git checkout master
+	echo "Pulling"
+	git pull
+	echo "Checking out $branch"
+	git checkout $branch
+	echo "Starting merge"
+	git merge master
+}
+
+function merge-upstream {
+	local branch=`currentBranch`
+	master
+	echo "Checking out $branch"
+	git checkout $branch
+	echo "Starting merge"
+	git merge master
+}
+
+function master {
+	echo "Checking out master"
+	git checkout master
+	echo "Pulling"
+	pull-upstream
+}
+
+alias continue-rebase="git rebase --continue"
+alias status="git status"
+alias s="status"
+alias diff="git diff"
+alias d="diff"
+alias add="git add"
+alias a="add"
+alias commit="git commit"
+alias checkout="git checkout"
+alias co="checkout"
