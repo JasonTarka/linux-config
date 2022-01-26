@@ -7,7 +7,10 @@ infoColour=32
 mainColour="\[\e[${mainColour}m\]"
 infoColour="\[\e[${infoColour}m\]"
 
-export PS1="\n${mainColour}[\u@${infoColour}\h${mainColour}, \d ${infoColour}\w${mainColour}]\$(promptCurrentBranch)\n\t \$ \[\e[0m\]"
+# Force update the tab/window title
+titleChange="\[\e]0;\u@\h: \w\a\]"
+
+export PS1="\n${titleChange}${mainColour}[\u@${infoColour}\h${mainColour}, \d ${infoColour}\w${mainColour}]\$(promptCurrentBranch)\n\t \$ \[\e[0m\]"
 
 function promptCurrentBranch {
         local branch=`currentBranch 2> /dev/null`
@@ -18,6 +21,32 @@ function promptCurrentBranch {
 
 unset mainColour
 unset infoColour
+
+
+##############################################
+# Helpful aliases
+
+alias dmesg='dmesg --ctime'
+
+# Make screen sessions easier
+# Reattaches to the named screen (or default if no name given)
+# if it exists, otherwise create a new screen with that name.
+# Pass `ls` to list existing screens.
+function screen() {
+	cmd=/usr/bin/screen
+	if [ -z "${1-}" ]; then
+		echo "Attaching to default screen"
+		$cmd -RAad -S default
+	elif [ "$1" == "ls" ] || [ "$1" == "-ls" ]; then
+		echo "Listing screens"
+		$cmd -ls
+	else
+		name="$1"
+		echo "Attaching to screen named ${name}"
+		$cmd -RAad -S "$name"
+	fi
+}
+
 
 ##############################################
 # Git Shortcuts
@@ -120,3 +149,28 @@ alias a="add"
 alias commit="git commit"
 alias checkout="git checkout"
 alias co="checkout"
+
+
+##############################################
+# Path functions
+# Add a directory to $PATH, but only if it
+# doesn't already exist.
+
+function addToPathEnd() {
+	exists=`echo $PATH | grep "$1"`
+	if [ -z "$exists" ]; then
+		export PATH="$PATH:$1"
+	fi
+}
+
+function addToPath() {
+	exists=`echo $PATH | grep "$1"`
+	if [ -z "$exists" ]; then
+		export PATH="$1:$PATH"
+	fi
+}
+
+# addToPath $HOME/bin
+# Add these to the end so they can't preempt an existing command
+# addToPathEnd $HOME/lib/node-latest/bin
+# addToPathEnd ./node_modules/.bin
