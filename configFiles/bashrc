@@ -10,8 +10,19 @@ infoColour="\[\e[${infoColour}m\]"
 # Force update the tab/window title
 titleChange="\[\e]0;\u@\h: \w\a\]"
 
-export PS1="\n${titleChange}${mainColour}[\u@${infoColour}\h${mainColour}, \d ${infoColour}\w${mainColour}]\$(promptCurrentBranch)\n\t \$ \[\e[0m\]"
+# If running in a Screen session, display the screen name.
+if [ ! -z "${STY-}" ]; then
+  screenName=`echo $STY | sed -E 's/^[0-9]+[.]//'`
+  screenName=":${screenName}"
+fi
 
+# Coloured prompt that includes the current git branch.
+export PS1="\n${titleChange}${mainColour}[\u@${infoColour}\h${screenName}${mainColour}, \d ${infoColour}\w${mainColour}]\$(promptCurrentBranch)\n\t \$ \[\e[0m\]"
+
+# Coloured prompt that DOES NOT include the current git branch.
+# export PS1="\n${titleChange}${mainColour}[\u@${infoColour}\h${screenName}${mainColour}, \d ${infoColour}\w${mainColour}]\n\t \$ \[\e[0m\]"
+
+# Used in the above to show the current Git branch.
 function promptCurrentBranch {
         local branch=`currentBranch 2> /dev/null`
         if [ "$branch" != "" ]; then
@@ -174,3 +185,4 @@ function addToPath() {
 # Add these to the end so they can't preempt an existing command
 # addToPathEnd $HOME/lib/node-latest/bin
 # addToPathEnd ./node_modules/.bin
+

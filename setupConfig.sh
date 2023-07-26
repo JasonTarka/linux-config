@@ -16,13 +16,15 @@ for file in ${DIR}/*; do
 
 	if [ -f $HOME_FILE ]; then
 		echo "Appending '$file' to '$HOME_FILE"
-		echo "" >> $HOME_FILE
-		cat "$file" >> "$HOME_FILE"
+		echo "" >> "$HOME_FILE"
 	else
-		echo "$HOME_FILE does not exist. Skipping."
+		echo "$HOME_FILE does not exist. Creating."
+		touch "$HOME_FILE"
 	fi
+	cat "$file" >> "$HOME_FILE"
 done
 
 if [ -f $HOME/.profile ]; then
 	. $HOME/.profile
 fi
+
